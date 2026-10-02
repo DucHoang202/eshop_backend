@@ -1,0 +1,110 @@
+// Dùng PostgreSQL managed (ví dụ Neon) qua biến môi trường DATABASE_URL.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Category {
+  FOOD_FRESH        // đồ ăn tươi sống
+  FOOD_PACKAGED     // đồ ăn đóng gói
+  FOOD_BEVERAGE     // đồ uống
+  HOME_KITCHEN      // đồ gia dụng nhà bếp
+  HOME_CLEANING     // đồ gia dụng vệ sinh
+  HOME_APPLIANCE    // thiết bị điện gia dụng
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  PACKING
+  SHIPPING
+  DELIVERED
+  CANCELLED
+}
+
+enum Role {
+  CUSTOMER
+  ADMIN
+}
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  passwordHash  String   // bcrypt hash — auth tự quản lý bằng Auth.js Credentials provider
+  name          String?
+  phone         String?
+  role          Role     @default(CUSTOMER)
+  addresses     Address[]
+  orders        Order[]
+  createdAt     DateTime @default(now())
+}
+
+model Address {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  fullName    String
+  phone       String
+  line1       String
+  ward        String?
+  district    String?
+  province    String
+  isDefault   Boolean  @default(false)
+}
+
+model Product {
+  id            String       @id @default(cuid())
+  sku           String       @unique
+  name          String
+  slug          String       @unique
+  description   String
+  category      Category
+  price         Int          // đơn vị: VND, lưu số nguyên tránh sai số float
+  compareAtPrice Int?
+  stock         Int          @default(0)
+  unit          String       // "kg", "gói", "chai", "cái"...
+  // Key ảnh gốc trên S3, ví dụ "products/abc123.jpg"
+  // URL đầy đủ hiển thị cho client = CLOUDFRONT_DOMAIN + "/" + imageKey
+  imageKey      String
+  thumbnailKey  String?      // sinh ra bởi Lambda resize-product-image
+  isActive      Boolean      @default(true)
+  orderItems    OrderItem[]
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([category])
+}
+
+model Order {
+  id            String       @id @default(cuid())
+  code          String       @unique // mã đơn hiển thị cho khách, vd FM-20260917-0001
+  userId        String?
+  user          User?        @relation(fields: [userId], references: [id])
+  guestEmail    String?
+  guestPhone    String?
+  status        OrderStatus  @default(PENDING)
+  items         OrderItem[]
+  subtotal      Int
+  shippingFee   Int          @default(0)
+  total         Int
+  shippingAddress Json       // snapshot địa chỉ tại thời điểm đặt
+  queueJobId    String?      // id job BullMQ, để trace lại trong Redis/Bull Board
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+}
+
+model OrderItem {
+  id          String   @id @default(cuid())
+  orderId     String
+  order       Order    @relation(fields: [orderId], references: [id])
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id])
+  quantity    Int
+  unitPrice   Int      // snapshot giá tại thời điểm mua
+}
