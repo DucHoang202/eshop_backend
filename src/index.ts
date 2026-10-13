@@ -14,7 +14,15 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openApiSpec));
+app.get('/api-docs', (req, res, next) => {
+  if (req.path === '/api-docs') {
+    res.redirect(301, '/api-docs/');
+    return;
+  }
+
+  next();
+});
+app.use('/api-docs/', swaggerUi.serve, swaggerUi.setup(openApiSpec));
 
 app.get(['/health', '/api/health'], (_req, res) => {
   res.json({ status: 'ok' });
