@@ -1,11 +1,13 @@
 # Food & Home backend
 
-Backend Express + Prisma cho API món ăn và đồ gia dụng. Swagger UI: `http://localhost:4000/api-docs`.
+Backend Express + Prisma cho API món ăn và đồ gia dụng. Cổng mặc định: `5002`.
+
+Swagger UI: `https://webcuatoi.io.vn/api-docs` (hoặc `http://localhost:5002/api-docs` khi chạy local).
 
 1. Kiểm tra API trên máy chủ hoặc từ máy khác:
 
    ```bash
-   curl http://localhost:4000/api/health
+   curl http://localhost:5002/api/health
    ```
 
    Kết quả thành công là `{"status":"ok"}`
