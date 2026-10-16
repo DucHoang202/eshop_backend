@@ -1,19 +1,27 @@
-# Food & Home backend
+# Food & Home Backend
 
-Backend Express + Prisma cho API món ăn và đồ gia dụng. Cổng mặc định: `5002`.
+An Express and Prisma backend for the Food & Home food and household goods store. The default port is `5002`.
 
-Swagger UI: `https://webcuatoi.io.vn/api-docs` (hoặc `http://localhost:5002/api-docs` khi chạy local).
+## API documentation
 
-1. Kiểm tra API trên máy chủ hoặc từ máy khác:
+Swagger UI: [https://webcuatoi.io.vn/api-docs](https://webcuatoi.io.vn/api-docs) or [http://localhost:5002/api-docs](http://localhost:5002/api-docs) when running locally.
 
-   ```bash
-   curl http://localhost:5002/api/health
-   ```
+## Health check
 
-   Kết quả thành công là `{"status":"ok"}`
+Check the API on the server or from another machine:
 
-## API sản phẩm
+```bash
+curl http://localhost:5002/api/health
+```
 
-Các API nằm dưới `/api/products`; danh mục gồm `FOOD_FRESH`, `FOOD_PACKAGED`, `FOOD_BEVERAGE`, `HOME_KITCHEN`, `HOME_CLEANING`, `HOME_APPLIANCE`. Có danh sách/lọc, tìm kiếm, danh mục, chi tiết, tạo đơn lẻ, tạo hàng loạt, cập nhật, cập nhật tồn kho, bật/tắt và xóa. Xem request/response đầy đủ trong Swagger UI.
+A successful response is `{"status":"ok"}`.
 
-Auth hiện có `POST /api/auth/register` và `POST /api/auth/login`.
+## Products API
+
+Product endpoints are available under `/api/products`. Supported categories are `FOOD_FRESH`, `FOOD_PACKAGED`, `FOOD_BEVERAGE`, `HOME_KITCHEN`, `HOME_CLEANING`, and `HOME_APPLIANCE`.
+
+The API supports listing and filtering products, search, category listing, product details, single and bulk creation, updates, stock updates, activation and deactivation, and deletion. See Swagger UI for complete request and response details.
+
+## Authentication API
+
+Authentication currently provides `POST /api/auth/register` and `POST /api/auth/login`.
